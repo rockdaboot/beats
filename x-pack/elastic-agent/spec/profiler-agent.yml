@@ -1,0 +1,35 @@
+name: Profiler Agent
+cmd: profiler-agent
+artifact: profiler-agent-dev
+action_input_types:
+- profiler
+rules:
+- fix_stream: {}
+
+- filter_values:
+    selector: inputs
+    key: type
+    values:
+    - profiler
+
+- filter_values:
+    selector: inputs
+    key: enabled
+    values:
+    - true
+
+- map:
+    path: fleet
+    rules:
+    - remove_key:
+        key: server
+
+- filter:
+    selectors:
+    - fleet
+    - inputs
+    - output
+    - revision
+
+when: length(${fleet}) > 0 and length(${inputs}) > 0
+constraints: ${runtime.arch} == 'amd64' and ${runtime.os} == 'linux'
